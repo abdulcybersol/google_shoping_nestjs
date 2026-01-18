@@ -167,15 +167,60 @@ export default function CheckoutPage() {
   };
 
   const handlePayment = async () => {
-    if (!hasAcceptedTerms) {
-      setError("Please accept the terms.");
+    setError('');
+    setIsSubmitting(true);
+    const hasInvalidCustomer = customers.some(
+      (customer) => !customer.name || !customer.email
+    );
+    if (hasInvalidCustomer) {
+      setError('Please fill in all required fields.');
+      setIsSubmitting(false);
       return;
     }
+    if (!hasAcceptedTerms) {
+      setError('Please accept the terms of use to continue.');
+      setIsSubmitting(false);
+      return;
+    }
+    try {
+      const payloadCustomers = customers.map((customer, index) => ({
+        fullName: customer.name,
+        email: customer.email,
+        phone: index === 0 ? customer.phone : '',
+      }));
 
-    setIsSubmitting(true);
-    setError("");
+      const response = await fetch('https://app-fb-simtlv.aridar-crm.com/api/cardcom/cardcom-create-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customers: payloadCustomers,
+          amount: totalAmount,
+          product_name: product.name || 'eSIM Global Starter',
+          product_type: 'gigaboost',
+          currency: 2,
+          ref: '',
+          utm: '',
+        }),
+      });
 
-    // your payment logic stays identical
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Payment request failed.');
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('Payment link missing.');
+      }
+    } catch (err) {
+      console.error('Payment error:', err);
+      setError(err.message || 'Payment failed. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
   /* -------------------------------- render --------------------------------- */
