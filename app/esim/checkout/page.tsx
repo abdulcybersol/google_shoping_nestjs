@@ -218,7 +218,11 @@ export default function CheckoutPage() {
       }
     } catch (err) {
       console.error('Payment error:', err);
-      setError(err.message || 'Payment failed. Please try again.');
+      if (err instanceof Error) {
+        setError(err.message || 'Payment failed. Please try again.');
+      } else {
+        setError('Payment failed. Please try again.');
+      }
       setIsSubmitting(false);
     }
   };
