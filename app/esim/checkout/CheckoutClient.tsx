@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { X } from "lucide-react";
 // import Footer from "@/components/Footer";
 
 export default function CheckoutPage() {
@@ -14,6 +15,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState("");
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
   const [showCountriesModal, setShowCountriesModal] = useState(false);
+  const [showDeviceModal, setShowDeviceModal] = useState(false);
 
   type Customer = { name: string; email: string; phone: string; };
   const [countryList, setCountryList] = useState<any[]>([]);
@@ -238,7 +240,7 @@ export default function CheckoutPage() {
                 <Link href="/">
                                           <div className="bg-simtlv-purple/10 backdrop-blur-sm p-2 rounded-lg border border-simtlv-purple/20 shadow-lg shadow-simtlv-purple/10">
                                             <img
-                                              src="/lovable-uploads/76c222a9-2179-437b-b0e9-a23989104e88.png"
+                                              src="/76c222a9-2179-437b-b0e9-a23989104e88.png"
                                               alt="SimTLV Logo"
                                               className="h-8 w-auto filter brightness-110"
                                             />
@@ -391,17 +393,31 @@ export default function CheckoutPage() {
                   className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
                 <span>
-                  אני מסכים לתנאי השימוש ואישרתי שהמכשיר שלי תומך ב‑eSIM.
-                  {/* <Link to="/terms-and-usage" className="text-purple-600 font-semibold hover:text-purple-700 underline">
-                    Terms of Use
-                  </Link> */}
-                </span>
+                אני מסכים ל 
+                <Link 
+                  href="/terms-and-usage" 
+                  className="text-purple-600 font-semibold hover:text-purple-700 underline"
+                >
+                  תנאי השימוש
+                </Link>
+                ואישרתי שהמכשיר שלי תומך ב‑
+                <Link 
+                  href="/esim-support" 
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setShowDeviceModal(true);
+                  }}
+                  className="text-purple-600 font-semibold hover:text-purple-700 underline"
+                >
+                  eSIM
+                </Link>
+              </span>
               </label>
             </div>
           <button
             onClick={handlePayment}
             disabled={isSubmitting}
-            className={`w-full py-4 mt-6 rounded-2xl text-lg font-black text-white shadow-lg active:scale-98 transition-all flex items-center justify-center gap-3 ${
+            className={`w-full py-4 mt-6 rounded-2xl text-lg font-black text-white shadow-lg active:scale-98 transition-all flex items-center justify-center gap-3 cursor-pointer ${
               selectedPayment === 'bit'
                 ? 'bg-gradient-to-br from-[#00AEEF] to-[#0095CC] shadow-[#00AEEF]/30'
                 : 'bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 shadow-purple-700/30 hover:brightness-105'
@@ -437,6 +453,41 @@ export default function CheckoutPage() {
             </button>
           </div>
         </div>
+      )}
+      {showDeviceModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-lg w-11/12 max-w-lg p-6 text-center relative">
+            <button
+              type="button"
+              onClick={() => setShowDeviceModal(false)}
+              className="absolute top-4 left-4 text-gray-400 hover:text-gray-600"
+              aria-label="Close"
+            >
+              <X size={20} />
+            </button>
+            <h2 className="text-lg font-extrabold text-gray-900 mb-4">בדיקת תמיכת eSIM במכשיר</h2>
+            <div className="space-y-4 text-sm text-gray-600 leading-relaxed">
+              <div className="font-semibold text-gray-800">למשתמשי iPhone</div>
+              <div>
+                עבור אל הגדרות &gt; סלולרי (או נתונים ניידים).
+                חפש אפשרות שאומרת "הוסף eSIM" או "הוסף תוכנית סלולרית".
+                אם אתה רואה זאת, ה‑iPhone שלך מוכן ל‑eSIM.
+              </div>
+              <div className="text-xs text-gray-500">הערה: כל מכשירי iPhone מה‑XR/XS ואילך תומכים ב‑eSIM.</div>
+              <div className="font-semibold text-gray-800">למשתמשי Android (Samsung, Pixel וכו')</div>
+              <div>
+                התפריטים משתנים מעט לפי מותג, אך באופן כללי:
+                <div className="mt-2">
+                  <div><span className="font-semibold text-gray-700">Samsung:</span> עבור אל הגדרות &gt; חיבורים &gt; מנהל SIM. חפש "הוסף eSIM".</div>
+                  <div><span className="font-semibold text-gray-700">Google Pixel:</span> עבור אל הגדרות &gt; רשת ואינטרנט &gt; SIMים. הקש על סמל ה‑+ כדי לראות אם הוא מבקש להוריד SIM.</div>
+                  <div><span className="font-semibold text-gray-700">מותגים אחרים:</span> עבור אל הגדרות והשתמש בשורת החיפוש כדי לחפש "eSIM" או "EID".</div>
+                </div>
+              </div>
+              <div className="text-sm text-gray-700 font-medium">אם עדיין יש לך שאלות, צור קשר עם התמיכה שלנו ב‑WhatsApp כדי לאמת תאימות.</div>
+            </div>
+          </div>
+        </div>
+
       )}
       {/* <Footer /> */}
     </>

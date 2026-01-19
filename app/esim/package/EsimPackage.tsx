@@ -322,7 +322,7 @@ const networks = useMemo(() => {
           <Link href="/">
             <div className="bg-simtlv-purple/10 backdrop-blur-sm p-2 rounded-lg border border-simtlv-purple/20 shadow-lg shadow-simtlv-purple/10">
               <img
-                src="/lovable-uploads/76c222a9-2179-437b-b0e9-a23989104e88.png"
+                src="/76c222a9-2179-437b-b0e9-a23989104e88.png"
                 alt="SimTLV Logo"
                 className="h-8 w-auto filter brightness-110"
               />
@@ -502,7 +502,7 @@ const networks = useMemo(() => {
           </div>
           <button
             onClick={handleCheckout}
-            className="bg-gradient-to-br from-purple-600 to-purple-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl active:scale-95 transition"
+            className="bg-gradient-to-br from-purple-600 to-purple-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl active:scale-95 transition cursor-pointer"
           >
             רכישה מיידית ←
           </button>
