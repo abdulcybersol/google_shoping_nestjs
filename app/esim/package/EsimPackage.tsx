@@ -136,7 +136,7 @@ const networks = useMemo(() => {
         return matches;
       };
 
-      let networksList = [];
+      let networksList: any[] = [];
       if (typeof country.networks === "string") {
         try {
           const parsed = JSON.parse(country.networks);
@@ -167,7 +167,7 @@ const networks = useMemo(() => {
 
       let networkValue = networksList.length > 0
         ? networksList
-            .flatMap((net) => {
+            .flatMap((net: any) => {
               if (typeof net === "string") {
                 const fromString = extractNetworkNamesFromString(net);
                 return fromString.length > 0 ? fromString : [];
@@ -247,7 +247,7 @@ const networks = useMemo(() => {
             ? data.data
             : [];
         console.log("List from API:", list);
-        const mapped = list.map((p) => ({
+        const mapped = list.map((p: any) => ({
           id: p.id || crypto.randomUUID(),
           dataAmount: Number(p.data ?? 0),
           data: `${p.data ?? 0} GB`,
@@ -259,7 +259,7 @@ const networks = useMemo(() => {
             : Number(p.data) === 5,
         }));
         console.log("Mapped plans:", mapped);
-        mapped.sort((a, b) => a.price - b.price);
+        mapped.sort((a: any, b: any) => a.price - b.price);
         setPlans(mapped.length > 0 ? mapped : defaultPlans);
         console.log(
           "Final plans set:",
