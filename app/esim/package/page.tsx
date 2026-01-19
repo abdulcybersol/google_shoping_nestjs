@@ -34,6 +34,7 @@ async function getProductSSR(countries: string, plan: string) {
     const countryObjects = countriesArray.filter((c: Country) => 
       selectedCountries.includes(c.iso_code)
     );
+    if (countryObjects.length === 0) return null;
     const highestZone = Math.max(...countryObjects.map((c: Country) => c.zone));
     
     // Fetch packages for that zone
@@ -54,13 +55,20 @@ async function getProductSSR(countries: string, plan: string) {
     const selectedPackage = packages.find(p => p.data === dataAmount);
     
     if (!selectedPackage) return null;
-    
+
+    const countryName =
+      countryObjects[0].hebrew_name || countryObjects[0].iso_code || "Country";
+    const imageUrl =
+      countryObjects[0].flag && /^https?:\/\//.test(countryObjects[0].flag)
+        ? countryObjects[0].flag
+        : "https://app.simtlv.co.il/images/esim-default.jpg";
+
     return {
-      title: `חבילת eSIM ${countryObjects[0].hebrew_name} - ${selectedPackage.data}GB`,
+      title: `eSIM ${countryName} - ${selectedPackage.data}GB`,
       price: Number(selectedPackage.price),
       currency: "ILS",
       sku: `${countries}-${selectedPackage.data}GB`,
-      image: countryObjects[0].flag || "🌐",
+      image: imageUrl,
       description: `${selectedPackage.data}GB data for ${selectedPackage.days} days`,
     };
   } catch (error) {
@@ -75,6 +83,9 @@ export default async function PackagePage({ searchParams }: Props) {
 
   const product = await getProductSSR(countries, plan);
   if (!product) notFound();
+  const pageUrl = `https://app.simtlv.co.il/esim/package?countries=${encodeURIComponent(
+    countries
+  )}&plan=${encodeURIComponent(plan)}`;
 
   return (
     <>
@@ -83,36 +94,37 @@ export default async function PackagePage({ searchParams }: Props) {
       <meta property="og:type" content="product" />
       <meta property="og:price:amount" content={product.price.toString()} />
       <meta property="og:price:currency" content={product.currency} />
-      {/* ✅ VISIBLE TO GOOGLE */}
-      <div style={{ display: 'none' }} itemScope itemType="https://schema.org/Product">
-        <h1 itemProp="name">{product.title}</h1>
-        <span itemProp="offers" itemScope itemType="https://schema.org/Offer">
-          <span itemProp="price">{product.price}</span>
-          <span itemProp="priceCurrency">{product.currency}</span>
-        </span>
-      </div>
 
-      {/* ✅ GOOGLE SHOPPING SCHEMA */}
 
     <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-            "@context": "https://schema.org/",
-            "@type": "Product",
-            name: product.title,
-            sku: product.sku,
-            image: "https://app.simtlv.co.il/images/esim-default.jpg",
-            description: product.description,
-            offers: {
-                "@type": "Offer",
-                url: `https://app.simtlv.co.il/esim/package?countries=${countries}&plan=${plan}`,
-                price: product.price.toFixed(2),
-                priceCurrency: product.currency,
-                availability: "https://schema.org/InStock",
-            },
-            }),
-        }}
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org/",
+          "@type": "Product",
+          name: product.title,
+          sku: product.sku,
+          image: [product.image],
+          description: product.description,
+          brand: {
+            "@type": "Brand",
+            name: "SimTLV"
+          },
+          offers: {
+            "@type": "Offer",
+            url: pageUrl,
+            price: product.price.toFixed(2),
+            priceCurrency: product.currency,
+            availability: "https://schema.org/InStock",
+            itemCondition: "https://schema.org/NewCondition",
+            priceValidUntil: "2026-12-31",
+            seller: {
+              "@type": "Organization",
+              name: "SimTLV"
+            }
+          }
+        })
+      }}
     />
 
       {/* ✅ CLIENT UI */}
